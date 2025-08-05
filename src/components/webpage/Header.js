@@ -1,10 +1,12 @@
 import './Header.css'
+import { Link } from 'react-router-dom';
 
 const Header = ({ isLoggedIn, onLogin, onLogout }) => {
   return (
     <header className="header">
-      <div className="logo">ASAP</div>
+      <Link className="logo" to="/">ASAP</Link>
       <nav className="menu">
+        {/*route 추가시 link로 변경하기 */}
         <a className="menu-item" href="market">농작물 마켓</a>
         <a className="menu-item" href="price">가격 예측</a>
       </nav>
