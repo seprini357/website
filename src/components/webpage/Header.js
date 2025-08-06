@@ -1,13 +1,15 @@
-import './Header.css'
-import { Link } from 'react-router-dom';
+import './Header.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = ({ isLoggedIn, onLogin, onLogout }) => {
+  const navigate = useNavigate(); // ✅ navigate 선언 추가
+
   return (
     <header className="header">
       <Link className="logo" to="/">ASAP</Link>
       <nav className="menu">
         {/*route 추가시 link로 변경하기 */}
-        <a className="menu-item" href="market">농작물 마켓</a>
+        <Link className="menu-item" to="/pagination">농작물 마켓</Link>
         <a className="menu-item" href="price">가격 예측</a>
       </nav>
       <div className="auth-buttons">
@@ -19,7 +21,7 @@ const Header = ({ isLoggedIn, onLogin, onLogout }) => {
         ) : (
           <>
             <button type="button" className="login-btn" onClick={onLogin}>로그인</button>
-            <button className="signup-btn">회원가입</button>
+            <button className="signup-btn" onClick={() => navigate("/signup")}>회원가입</button>
           </>
         )}
       </div>
@@ -28,3 +30,4 @@ const Header = ({ isLoggedIn, onLogin, onLogout }) => {
 };
 
 export default Header;
+
