@@ -13,14 +13,40 @@ import { useNavigate } from 'react-router-dom';
 const Homepage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [serialNumber, setSerialNumber] = useState('');
 
   const handleFeatureClick = (page) => {
     navigate(page);
   };
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleEnterClick = () => {
-    setIsModalOpen(true);
+  // 시리얼 번호 입력 후 API 호출 (미완)
+  const handleEnterClick = async () => {
+    if (!serialNumber.trim()) {
+      alert('시리얼 번호를 입력해주세요.');
+      return;
+    }
+
+    try { //api 수정
+      const res = await fetch(`http://localhost:3000/api/device/${serialNumber}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log('디바이스 조회 실패');
+        return;
+      }
+
+      if (data.success) {
+        console.log('디바이스 정보:', data.device);
+        // 모달 열기 또는 페이지 이동 추가하기(미완)
+        setIsModalOpen(true);
+      } else {
+        alert('디바이스 조회 실패');
+      }
+    } catch (error) {
+      console.log('API 호출 에러');
+      alert('서버와 연결할 수 없습니다.');
+    }
   };
 
   const handleModalClose = () => {
@@ -28,8 +54,8 @@ const Homepage = () => {
   };
 
   const handleCropSelection = (selectedCrop) => {
-    console.log('Selected crop:', selectedCrop);
-    // 대시보드 로직 추가
+    console.log('선택한 작물', selectedCrop);
+    // 작물 선택 시 API 호출 기능 추가(미완)
   };
 
   const handleLogin = () => {
@@ -70,6 +96,8 @@ const Homepage = () => {
               <input
                 type="text"
                 placeholder="디바이스 일련번호를 입력하세요."
+                value={serialNumber}
+                onChange={(e) => setSerialNumber(e.target.value)}
               />
               <button type="submit">들어가기</button>
             </form>
@@ -104,7 +132,6 @@ const Homepage = () => {
               수확한 작물을 손쉽게 거래할 수 있어요.
             </div>
           </div>
-
           <div
             className="feature-card"
             onClick={() => handleFeatureClick('/price')}
@@ -128,7 +155,7 @@ const Homepage = () => {
           </div>
         </section>
       </div>
-
+      {/*들억가기 버튼 누를 시 작물 고르기 */}
       <Selectvege
         isOpen={isModalOpen}
         onClose={handleModalClose}
@@ -140,3 +167,4 @@ const Homepage = () => {
 };
 
 export default Homepage;
+

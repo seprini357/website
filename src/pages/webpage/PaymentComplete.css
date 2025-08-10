@@ -65,7 +65,7 @@
   border-color: #ccc;
 }
 
-.mypage-btn {
+.payment-mypage-btn {
   background: #6a842a;
   color: #fff;
   border: none;
@@ -77,7 +77,7 @@
   min-width: 160px;
 }
 
-.mypage-btn:hover {
+.payment-mypage-btn:hover {
   background: #5a7120;
 }
 

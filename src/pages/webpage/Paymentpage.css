@@ -90,30 +90,40 @@
   margin-bottom: 30px;
 }
 
-.product-item {
+.product-section,
+.payment-amount-section,
+.recipient-section {
+  margin-bottom: 24px;
+}
+
+.product-section label,
+.payment-amount-section label,
+.recipient-section label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 8px;
+}
+.order-layout{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 24px;
 }
 
-.product-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.product-details h4 {
-  font-size: 16px;
+.title{
   font-weight: 500;
+  font-size: 18px;
   color: #222;
+  margin: 0;
 }
 
 .quantity-control {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .quantity-btn {
@@ -128,10 +138,17 @@
   cursor: pointer;
   font-size: 16px;
   color: #666;
+  transition: all 0.2s;
 }
 
-.quantity-btn:hover {
+.quantity-btn:hover:not(:disabled) {
   background: #f5f5f5;
+  border-color: #6a842a;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .quantity-input {
@@ -141,18 +158,12 @@
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
+  background: #fff;
 }
 
-.payment-amount {
-  margin-bottom: 30px;
-}
-
-.payment-amount label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #222;
-  margin-bottom: 8px;
+.quantity-input:focus {
+  outline: none;
+  border-color: #6a842a;
 }
 
 .payment-amount-display {
@@ -164,15 +175,16 @@
   background: #fff;
   box-sizing: border-box;
   color: #222;
+  cursor: default;
 }
 
 .recipient-info {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 30px;
+  margin-top: 8px;
   padding: 16px;
-  background: #fff;
+  background: #f5f5f5;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
 }
@@ -186,7 +198,8 @@
   align-items: center;
   justify-content: center;
   color: #999;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .recipient-name {

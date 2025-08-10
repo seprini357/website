@@ -12,12 +12,6 @@
   justify-content: flex-start;
 }
 
-.breadcrumb {
-  font-size: 14px;
-  color: #888;
-  margin-bottom: 20px;
-}
-
 .image-slider {
   position: relative;
   width: 100%;
@@ -91,7 +85,7 @@
   border-radius: 8px;
   padding: 4px 12px;
   margin-bottom: 18px;
-  width: 40px;
+  width: 50px;
   white-space:nowrap;
 }
 
@@ -111,13 +105,13 @@
 
 .product-title {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   color: #23292f;
 }
 
 .product-price {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   color: #23292f;
   letter-spacing: -1px;
 }
@@ -205,6 +199,7 @@
   min-height: 220px;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
+  padding: 20px;
 }
 
 .seller-profile {

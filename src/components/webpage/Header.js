@@ -1,8 +1,8 @@
 import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Header = ({ isLoggedIn, onLogin, onLogout }) => {
-  const navigate = useNavigate(); // ✅ navigate 선언 추가
+const Header = ({ isLoggedIn, onLogout }) => {
+  const navigate = useNavigate(); 
 
   return (
     <header className="header">
@@ -20,7 +20,7 @@ const Header = ({ isLoggedIn, onLogin, onLogout }) => {
           </>
         ) : (
           <>
-            <button type="button" className="login-btn" onClick={onLogin}>로그인</button>
+            <button type="button" className="login-btn" onClick={() => navigate("/login")}>로그인</button>
             <button className="signup-btn" onClick={() => navigate("/signup")}>회원가입</button>
           </>
         )}

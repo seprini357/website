@@ -1,7 +1,10 @@
 import './PaymentComplete.css';
 import Header from '../../components/webpage/Header';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentComplete = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="paymentComplete">
       <div className="container">
@@ -14,10 +17,16 @@ const PaymentComplete = () => {
               주문 내역은 마이페이지에서 확인 가능합니다.
             </p>
             <div className="button-group">
-              <button className="browse-btn">
+              <button
+                className="browse-btn"
+                onClick={() => navigate('/pagination')}
+              >
                 둘러보기
               </button>
-              <button className="mypage-btn">
+              <button
+                className="payment-mypage-btn"
+                onClick={() => navigate('/mypage')}
+              >
                 마이페이지로 이동하기
               </button>
             </div>

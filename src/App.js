@@ -16,7 +16,7 @@ function App() {
     <div className="website-main-content">
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/detail" element={<Detailpage />} />
+        <Route path="/detail/:id" element={<Detailpage />} />
         <Route path="/sellingpost" element={<Sellingpost/>} />
         <Route path="/payment" element={<Paymentpage/>} />
         <Route path="/paymentcomplete" element={<PaymentComplete/>} />
