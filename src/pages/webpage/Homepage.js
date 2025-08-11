@@ -155,7 +155,7 @@ const Homepage = () => {
           </div>
         </section>
       </div>
-      {/*들억가기 버튼 누를 시 작물 고르기 */}
+      {/*들어가기 버튼 누를 시 작물 고르기 */}
       <Selectvege
         isOpen={isModalOpen}
         onClose={handleModalClose}

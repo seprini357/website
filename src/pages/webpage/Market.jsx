@@ -19,7 +19,7 @@ const Market = () => {
   const [productList, setProductList] = useState([]);
 
 
-  // 더미 데이터 연동 후 삭제 
+  //❌ 더미 데이터 연동 후 삭제 
   const dummyData = [
     {
       id: 0,
@@ -34,8 +34,7 @@ const Market = () => {
       isNew: true,
       seller: {
         id: 123,
-        nickname: "농부김씨",
-        profile_img: "/images/seller-profile.jpg"
+        nickname: "농부김씨"
       },
       status: "판매중"
     },
@@ -51,8 +50,7 @@ const Market = () => {
       isNew: true,
       seller: {
         id: 124,
-        nickname: "토마토농장",
-        profile_img: "/images/seller-profile2.jpg"
+        nickname: "토마토농장"
       },
       status: "판매중"
     },
@@ -68,8 +66,7 @@ const Market = () => {
       isNew: false,
       seller: {
         id: 125,
-        nickname: "초록농장",
-        profile_img: "/images/seller-profile3.jpg"
+        nickname: "초록농장"
       },
       status: "판매중"
     }
@@ -77,19 +74,19 @@ const Market = () => {
 
   useEffect(() => {
     const getProducts = async () => {
-      /* 연동 후 사용 
+      /* 상품 불러오기
       try {
         const res = await fetch('http://localhost:3000/api/market'); // API 수정
         const data = await res.json();
         if(!res.ok) {
-          console.error('상품 불러오기 실패');
+          console.log('상품 api 불러오기 실패');
         }setProductList(data);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
       */
 
-      // 더미 데이터 사용, 연동 후 삭제
+      // ❌더미 데이터 사용, 연동 후 삭제
       console.log('더미 데이터');
       setProductList(dummyData);
     };

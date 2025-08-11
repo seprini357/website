@@ -36,6 +36,11 @@ const Mypage = () => {
           console.log('사용자 정보 api 가져오기 실패');
         }
         const data = await res.json();
+         //데이터[
+          seller: {
+        id: 123,
+        nickname: "농부김씨"}
+        ]
         }
         */
 
@@ -90,6 +95,13 @@ const Mypage = () => {
         }
         const data = await res.json();
         setWishlist(data.wishlist);
+         //데이터[
+          productId,
+          title,
+          price,
+          images
+          sellerNickname
+        ]
         */
 
         // ❌ API 연동 시 삭제: 찜 상품 더미데이터 
@@ -98,10 +110,6 @@ const Mypage = () => {
 
       } catch (error) {
         console.log("찜 상품 API 호출 실패");
-        
-        // ❌ API 연동 시 삭제: 에러 시 찜 상품 더미데이터
-        const storedWishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-        setWishlist(storedWishlist);
       }
     };
 
@@ -117,8 +125,7 @@ const Mypage = () => {
         const res = await fetch('/api/user/selling-products', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Content-Type': 'application/json'
           }
         });
         
@@ -127,6 +134,13 @@ const Mypage = () => {
         }
         const data = await res.json();
         setSellingProducts(data.products);
+        //데이터[
+          productId,
+          title,
+          price,
+          images
+          status:판매중
+        ]
         */
 
         // ❌ API 연동 시 삭제: 판매 상품 더미데이터
@@ -191,6 +205,16 @@ const Mypage = () => {
         }
         const data = await res.json();
         setOrderHistory(data.orders);
+
+        //데이터 
+        order[
+        productId,
+        productTitle,
+        sellerNickname,
+        orderDate,
+        quantity,
+        totalAmout
+        ]
         */
 
         // ❌ API 연동 시 삭제: 주문 내역 더미데이터
@@ -316,7 +340,7 @@ const Mypage = () => {
       });
       
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        console.log('포인트 충전 api 가져오기 실패 ');
       }
       
       const result = await res.json();
@@ -465,11 +489,7 @@ const Mypage = () => {
               </div>
             </div>
             
-            <div className="user-profile-stats">
-              <div className="profile-image">
-                프로필 이미지
-              </div>
-              
+            <div className="user-profile-stats">              
               <div className="user-stats">
                 <div className="stat-item">
                   <div className="stat-label">포인트</div>

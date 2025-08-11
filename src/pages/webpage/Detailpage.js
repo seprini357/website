@@ -7,7 +7,7 @@ const Detailpage = () => {
   let { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [isWished, setIsWished] = useState(false);
+  const [isWished, setIsWished] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   // ❌ API 연동 시 삭제: 더미 데이터
@@ -25,8 +25,7 @@ const Detailpage = () => {
       isNew: true,
       seller: {
         id: 123,
-        nickname: "농부김씨",
-        profile_img: "/images/seller-profile.jpg"
+        nickname: "농부김씨"
       },
       status: "판매중"
     },
@@ -42,8 +41,7 @@ const Detailpage = () => {
       isNew: true,
       seller: {
         id: 124,
-        nickname: "토마토농장",
-        profile_img: "/images/seller-profile2.jpg"
+        nickname: "토마토농장"
       },
       status: "판매중"
     },
@@ -59,8 +57,7 @@ const Detailpage = () => {
       isNew: false,
       seller: {
         id: 125,
-        nickname: "초록농장",
-        profile_img: "/images/seller-profile3.jpg"
+        nickname: "초록농장"
       },
       status: "판매중"
     }
@@ -84,6 +81,29 @@ const Detailpage = () => {
         setProduct(null);
       }
       */  
+
+      // ❌ API가 주석처리된 상태에서도 동작하도록 더미 데이터 처리
+      let foundProduct = dummyData.find(item => item.id === parseInt(id));
+
+      // Sellingpost에서 등록된 상품인지 확인 (더미데이턴)
+      if (!foundProduct) {
+        const sellingProducts = JSON.parse(localStorage.getItem("sellingProducts") || "[]");
+        const sellingProduct = sellingProducts.find(item => item.id === parseInt(id));
+        
+        if (sellingProduct) {
+          foundProduct = {
+            ...sellingProduct,
+            product_title: sellingProduct.product_name,
+            images: sellingProduct.images > 0 ? ["/images/sample-product.jpg"] : [],
+            seller: {
+              id: Date.now(),
+              nickname: sellingProduct.sellerNickname || '판매자'
+            }
+          };
+        }
+      }
+
+      setProduct(foundProduct || null);
     } catch (error) {
       console.log("상품 상세 정보 API 호출 실패");
       
@@ -113,37 +133,28 @@ const Detailpage = () => {
     }
   }
 
-  // 로그인 상태 확인 함수
-  const checkLoginStatus = () => {
-    /*
-    // api 변경 
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetch('/api/auth/verify')
-      .then(res => res.ok ? setIsLoggedIn(true) : setIsLoggedIn(false))
-      .catch(() => setIsLoggedIn(false));
-    } else {
-      setIsLoggedIn(false);
-    }
-    */
-
-    // ❌ API 연동 시 삭제: localStorage 기반 로그인 확인
-    const userInfo = localStorage.getItem("userInfo");
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!(userInfo && token));
-  };
 
   const loadWishStatus = () => {
     /*
-    // api 수정 - 찜 상태 API 확인
-    fetch(`/api/user/wishlist/check/${id}`, {
-      headers: {
-        'Content-Type': 'application/json'
+    if (!isLoggedIn || !product) return;
+    
+    try {
+      const res = await fetch('http://localhost:3000/api/user/wishlist/${id}', {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      setIsWished(data.isWished || false);
+
+      if (!res.ok) {
+        console.log('찜 상태 확인 실패');
       }
-    })
-    .then(res => res.json())
-    .then(data => setIsWished(data.isWished))
-    .catch(error => console.log("찜 상태 확인 실패:", error));
+    } catch (error) {
+      console.log('찜 상태 확인 실패');
+      setIsWished(false);
+    }
+  };
     */
 
     // ❌ API 연동 시 삭제: localStorage 기반 찜 상태 확인
@@ -173,15 +184,14 @@ const Detailpage = () => {
         // 찜 해제
         /*
         // api 수정
-        const res = await fetch(`/api/user/wishlist/${product.id}`, {
+        const res = await fetch(`/api/user/wishlist/${product.id}`,{
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'
           }
-        });
-        
+        });  
         if (!res.ok) {
-          console.log('찜해제 api 연결 실패');
+          console.log('찜해제 api 가져오기 실패');
         }
         
         setIsWished(false);
@@ -197,15 +207,14 @@ const Detailpage = () => {
         console.log('찜이 해제되었습니다.');
 
       } else {
-        // 찜하기
-        /*
+        /*찜하기
         // api 수정
         const wishData = {
           productId: product.id,
-          title: product.title,
+          title: product.title//제목,
           price: product.price,
-          image: product.images?.[0] || '',
-          sellerNickname: product.seller?.nickname || ''
+          image: product.images?.[0] ,
+          sellerNickname: product.seller?.nickname 
         };
 
         const res = await fetch('/api/user/wishlist', {
@@ -265,7 +274,6 @@ const Detailpage = () => {
 
   useEffect(() => {
     getDetailpage();
-    checkLoginStatus();
   }, [id]);
 
   useEffect(() => {
@@ -358,17 +366,6 @@ const Detailpage = () => {
             <div className="bottom-title">판매자 정보</div>
             <div className="bottom-divider"></div>
             <div className="seller-profile">
-              <div className="profile-img">
-                {product?.seller?.profile_img && (
-                  <img
-                    src={product.seller.profile_img}
-                    alt=""
-                    onError={(e) => {
-                      e.target.src = "/images/default-profile.jpg";
-                    }}
-                  />
-                )}
-              </div>
               <div className="seller-info">
                 <div className="seller-name">
                   {product?.seller?.nickname || '판매자 닉네임'}

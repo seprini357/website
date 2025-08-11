@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Paymentpage = () => {
-  const {navigate} = useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams();
   const [formData, setFormData] = useState({
     name: '',
@@ -171,7 +171,8 @@ const Paymentpage = () => {
         productId: parseInt(id),
         quantity: quantity,
         totalAmount: totalAmount,
-        deliveryInfo: formData
+        deliveryInfo: formData//빼도 됨
+
       };
       //api 수정 
       const res = await fetch('http://localhost:3000/api/payment', {
@@ -179,7 +180,7 @@ const Paymentpage = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify
+        body: JSON.stringify(paymentData)
       });
 
       if (!res.ok) {

@@ -117,7 +117,7 @@ const Sellingpost = ({ isLoggedIn = true }) => {
     if (isSubmitting) return; // 중복 제출 방지
     const formData = new FormData();
     formData.append('title', e.target.title.value.trim());
-    formData.append('product_name', selectedProduct);
+    formData.append('product_title', selectedProduct);
     formData.append('price', parseInt(e.target.price.value.trim()));
     formData.append('description', e.target.description.value.trim());
 
@@ -155,7 +155,7 @@ const Sellingpost = ({ isLoggedIn = true }) => {
       const newProduct = {
         id: Date.now(), 
         title: e.target.title.value.trim(),
-        product_name: selectedProduct,
+        product_title: selectedProduct,
         price: parseInt(e.target.price.value.trim()),
         description: e.target.description.value.trim(),
         images: selectedFiles.length, 
