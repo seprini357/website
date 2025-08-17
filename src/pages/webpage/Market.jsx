@@ -7,62 +7,42 @@ import Heart from '../../components/webpage/Heart';
 import ArrowUpCircle from '../../components/webpage/ArrowUpCircle';
 import styles from './Market.module.css';
 
-const Market = () => {
+const Market = ({ isLoggedIn, onLogin, onLogout }) => {
   const navigate = useNavigate();
+
   const handleChatClick = () => navigate('/chat');
   const handleWriteClick = () => navigate('/Sellingpost');
   const handleProductClick = (id) => navigate(`/detail/${id}`);
   const handleSendMessage = () => console.log('검색 실행');
 
   const [productList, setProductList] = useState([]);
-  const [likedProducts, setLikedProducts] = useState([]); // ✅ 좋아요 상태 저장
-
-  // ✅ 비로그인 접근 차단: 마켓 진입 시 로그인 여부 검사
-  useEffect(() => {
-    const authed = localStorage.getItem('auth') === '1';
-    if (!authed) {
-      alert('로그인 후 이용할 수 있습니다.');
-      navigate('/login', { replace: true });
-    }
-  }, [navigate]);
+  const [likedProducts, setLikedProducts] = useState([]);
 
   const toggleLike = (id) => {
     setLikedProducts((prev) =>
-      prev.includes(id)
-        ? prev.filter((pid) => pid !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
 
-  //❌ 더미 데이터 연동 후 삭제
+  // 더미 데이터 (API 연동 전 사용)
   const dummyData = [
-    { id: 0, title: "맛있는 가지 팝니다", price: 400, images: ["/images/sample-product.jpg"], description: "농약 없이 키운 가지", seller: { id: 123, nickname: "농부김씨" } },
-    { id: 1, title: "신선한 토마토 판매합니다", price: 800, images: ["/images/sample-product.jpg"], description: "햇볕 듬뿍 토마토", seller: { id: 124, nickname: "토마토농장" } },
-    { id: 2, title: "유기농 상추 팝니다", price: 300, images: ["/images/sample-product.jpg"], description: "깨끗한 상추", seller: { id: 125, nickname: "초록농장" } }
+    { id: 0, title: '맛있는 가지 팝니다', price: 400, images: ['/images/sample-product.jpg'], description: '농약 없이 키운 가지', seller: { id: 123, nickname: '농부김씨' } },
+    { id: 1, title: '신선한 토마토 판매합니다', price: 800, images: ['/images/sample-product.jpg'], description: '햇볕 듬뿍 토마토', seller: { id: 124, nickname: '토마토농장' } },
+    { id: 2, title: '유기농 상추 팝니다', price: 300, images: ['/images/sample-product.jpg'], description: '깨끗한 상추', seller: { id: 125, nickname: '초록농장' } },
   ];
 
   useEffect(() => {
     setProductList(dummyData);
   }, []);
 
-  // ✅ Header에 실제 로그인 상태 반영
-  const isLoggedIn = localStorage.getItem('auth') === '1';
-
   return (
     <>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
-        <Header
-          isLoggedIn={isLoggedIn}
-          onLogout={() => {
-            localStorage.removeItem('auth');
-            navigate('/', { replace: true });
-          }}
-        />
+        <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
       </div>
 
       <div className={styles.pageWrapper}>
         <main className={styles.mainContent}>
-          {/* 왼쪽 버튼들 */}
           <div className={styles.leftButtons}>
             <button className={styles.topButton} onClick={handleWriteClick}>+ 글쓰기</button>
             <button className={`${styles.topButton} ${styles.active}`}>채팅</button>
@@ -84,7 +64,12 @@ const Market = () => {
                   onClick={() => handleProductClick(product.id)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <div onClick={(e) => { e.stopPropagation(); toggleLike(product.id); }}>
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLike(product.id);
+                    }}
+                  >
                     <Heart size={36} liked={likedProducts.includes(product.id)} />
                   </div>
 
@@ -92,9 +77,11 @@ const Market = () => {
                     <div className={styles.image20Parent}>
                       <img
                         className={styles.image20}
-                        src={product.images?.[0] || "/images/sample-product.jpg"}
+                        src={product.images?.[0] || '/images/sample-product.jpg'}
                         alt={product.title}
-                        onError={(e) => { e.target.src = "/images/sample-product.jpg"; }}
+                        onError={(e) => {
+                          e.target.src = '/images/sample-product.jpg';
+                        }}
                       />
                       <div className={styles.parent}>
                         <h3 className={styles.h3}>{product.title}</h3>
@@ -102,12 +89,21 @@ const Market = () => {
                       </div>
                       <div className={styles.frameChild} />
                     </div>
+
                     <Button
-                      onClick={(e) => { e.stopPropagation(); handleChatClick(); }}
-                      size="Medium" state="Default" variant="Primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleChatClick();
+                      }}
+                      size="Medium"
+                      state="Default"
+                      variant="Primary"
                       label="채팅 보내기"
-                      buttonHeight="40px" buttonWidth="100%" buttonBorder="1px solid #2c2c2c"
-                      buttonFontSize="16px" buttonFontWeight="600"
+                      buttonHeight="40px"
+                      buttonWidth="100%"
+                      buttonBorder="1px solid #2c2c2c"
+                      buttonFontSize="16px"
+                      buttonFontWeight="600"
                     />
                   </div>
                 </div>
@@ -129,6 +125,9 @@ const Market = () => {
 };
 
 export default Market;
+
+
+
 
 
 

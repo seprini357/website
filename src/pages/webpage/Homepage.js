@@ -7,17 +7,47 @@ import smartfarm from '../../icons/smart farm image.svg';
 import groceries from '../../icons/groceries 2.png';
 import Footer from '../../components/webpage/Footer';
 import Selectvege from '../../components/webpage/Selectvege';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [lsLoggedIn, setLsLoggedIn] = useState(() => {
+    try {
+      return localStorage.getItem('isLoggedIn') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // ✅ 같은 탭/다른 탭/포커스/라우트 변경 시 동기화
+  useEffect(() => {
+    const sync = () => setLsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+    window.addEventListener('authchange', sync);  // 같은 탭
+    window.addEventListener('storage', sync);     // 다른 탭
+    window.addEventListener('focus', sync);
+    window.addEventListener('pageshow', sync);
+    return () => {
+      window.removeEventListener('authchange', sync);
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('focus', sync);
+      window.removeEventListener('pageshow', sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    setLsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, [location.pathname]);
+
+  const effectiveIsLoggedIn = typeof isLoggedIn === 'boolean' ? isLoggedIn : lsLoggedIn;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [serialNumber, setSerialNumber] = useState('');
 
-  // ✅ 수정: 비로그인 상태에서 농작물 마켓(/pagination) 접근 막기
   const handleFeatureClick = (page) => {
-    if (!isLoggedIn && page === '/pagination') {
+    if (!effectiveIsLoggedIn && (page === '/pagination' || page === '/market')) {
       alert('로그인 후 이용할 수 있습니다.');
       navigate('/login');
       return;
@@ -31,9 +61,7 @@ const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
       return;
     }
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/device/${serialNumber}`
-      );
+      const res = await fetch(`http://localhost:3000/api/device/${serialNumber}`);
       const data = await res.json();
       if (!res.ok) {
         console.log('디바이스 조회 실패');
@@ -56,11 +84,23 @@ const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
     console.log('선택한 작물', selectedCrop);
   };
 
+  const fallbackLogin = () => navigate('/login');
+  const fallbackLogout = () => {
+    try {
+      localStorage.removeItem('isLoggedIn');
+    } catch {}
+    setLsLoggedIn(false);
+    window.dispatchEvent(new Event('authchange'));
+  };
+
   return (
     <div className="homepage">
       <div className="container">
-        {/* ← App에서 받은 로그인 상태/핸들러 전달 */}
-        <Header isLoggedIn={isLoggedIn} onLogin={onLogin} onLogout={onLogout} />
+        <Header
+          isLoggedIn={effectiveIsLoggedIn}
+          onLogin={onLogin || fallbackLogin}
+          onLogout={onLogout || fallbackLogout}
+        />
 
         <main className="main-grid">
           <section className="left-col">
@@ -92,31 +132,20 @@ const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
           </section>
 
           <section className="right-col">
-            <img
-              className="main-image-placeholder"
-              src={groceries}
-              alt="작물"
-            />
+            <img className="main-image-placeholder" src={groceries} alt="작물" />
           </section>
         </main>
 
         <section className="features-section">
           <div className="feature-card" onClick={() => handleFeatureClick('/')}>
-            <img
-              className="feature-icon"
-              src={smartfarm}
-              alt="smartfarm이미지"
-            />
+            <img className="feature-icon" src={smartfarm} alt="smartfarm이미지" />
             <div className="feature-title">스마트팜 대시보드</div>
             <div className="feature-desc">
               농작물 상태와 환경 정보를 한눈에 확인하고 편리하게 관리하세요.
             </div>
           </div>
 
-          <div
-            className="feature-card"
-            onClick={() => handleFeatureClick('/pagination')}
-          >
+          <div className="feature-card" onClick={() => handleFeatureClick('/pagination')}>
             <img className="feature-icon" src={market} alt="market 이미지" />
             <div className="feature-title">농작물 마켓</div>
             <div className="feature-desc">
@@ -124,10 +153,7 @@ const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
             </div>
           </div>
 
-          <div
-            className="feature-card"
-            onClick={() => handleFeatureClick('/price')}
-          >
+          <div className="feature-card" onClick={() => handleFeatureClick('/price')}>
             <img className="feature-icon" src={AI} alt="AI 이미지" />
             <div className="feature-title">가격 예측</div>
             <div className="feature-desc">
@@ -149,14 +175,12 @@ const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
         </section>
       </div>
 
-      <Selectvege
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onEnter={handleCropSelection}
-      />
+      <Selectvege isOpen={isModalOpen} onClose={handleModalClose} onEnter={handleCropSelection} />
       <Footer />
     </div>
   );
 };
 
 export default Homepage;
+
+
