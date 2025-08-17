@@ -290,7 +290,7 @@ const Detailpage = () => {
   return (
     <div className="detailpage">
       <div className="container">
-        <Header />
+        <Header isLoggedIn={true} onLogout={() => { localStorage.removeItem("auth"); window.location.href = "/"; }} />
         <div className="main-grid">
           <section className="detail-left">
             <div className="image-slider">

@@ -12,181 +12,108 @@ const Market = () => {
   const handleChatClick = () => navigate('/chat');
   const handleWriteClick = () => navigate('/Sellingpost');
   const handleProductClick = (id) => navigate(`/detail/${id}`);
-  const handleSendMessage = () => {
-    console.log('검색 실행');
-  };
+  const handleSendMessage = () => console.log('검색 실행');
 
   const [productList, setProductList] = useState([]);
+  const [likedProducts, setLikedProducts] = useState([]); // ✅ 좋아요 상태 저장
 
-
-  //❌ 더미 데이터 연동 후 삭제 
-  const dummyData = [
-    {
-      id: 0,
-      title: "맛있는 가지 팝니다",
-      product_title: "가지",
-      price: 400,
-      images: [
-        "/images/sample-product.jpg",
-        "/images/sample-product2.jpg"
-      ],
-      description: " 농약 없이 키운 유기농 가지로, 직접 농장에서 재배하여 신선도가 뛰어납니다. 요리에 활용하시면 부드러운 식감과 깊은 맛을 느끼실 수 있습니다.",
-      isNew: true,
-      seller: {
-        id: 123,
-        nickname: "농부김씨"
-      },
-      status: "판매중"
-    },
-    {
-      id: 1,
-      title: "신선한 토마토 판매합니다",
-      product_title: "토마토",
-      price: 800,
-      images: [
-        "/images/sample-product.jpg"
-      ],
-      description: "햇볕을 듬뿍 받고 자란 신선한 토마토입니다. 당도가 높고 과즙이 풍부합니다.",
-      isNew: true,
-      seller: {
-        id: 124,
-        nickname: "토마토농장"
-      },
-      status: "판매중"
-    },
-    {
-      id: 2,
-      title: "유기농 상추 팝니다",
-      product_title: "상추",
-      price: 300,
-      images: [
-        "/images/sample-product.jpg"
-      ],
-      description: "농약을 사용하지 않고 키운 깨끗한 상추입니다. 쌈 채소로 최고입니다.",
-      isNew: false,
-      seller: {
-        id: 125,
-        nickname: "초록농장"
-      },
-      status: "판매중"
+  // ✅ 비로그인 접근 차단: 마켓 진입 시 로그인 여부 검사
+  useEffect(() => {
+    const authed = localStorage.getItem('auth') === '1';
+    if (!authed) {
+      alert('로그인 후 이용할 수 있습니다.');
+      navigate('/login', { replace: true });
     }
+  }, [navigate]);
+
+  const toggleLike = (id) => {
+    setLikedProducts((prev) =>
+      prev.includes(id)
+        ? prev.filter((pid) => pid !== id)
+        : [...prev, id]
+    );
+  };
+
+  //❌ 더미 데이터 연동 후 삭제
+  const dummyData = [
+    { id: 0, title: "맛있는 가지 팝니다", price: 400, images: ["/images/sample-product.jpg"], description: "농약 없이 키운 가지", seller: { id: 123, nickname: "농부김씨" } },
+    { id: 1, title: "신선한 토마토 판매합니다", price: 800, images: ["/images/sample-product.jpg"], description: "햇볕 듬뿍 토마토", seller: { id: 124, nickname: "토마토농장" } },
+    { id: 2, title: "유기농 상추 팝니다", price: 300, images: ["/images/sample-product.jpg"], description: "깨끗한 상추", seller: { id: 125, nickname: "초록농장" } }
   ];
 
   useEffect(() => {
-    const getProducts = async () => {
-      /* 상품 불러오기
-      try {
-        const res = await fetch('http://localhost:3000/api/market'); // API 수정
-        const data = await res.json();
-        if(!res.ok) {
-          console.log('상품 api 불러오기 실패');
-        }setProductList(data);
-      } catch (error) {
-        console.log(error);
-      }
-      */
+    setProductList(dummyData);
+  }, []);
 
-      // ❌더미 데이터 사용, 연동 후 삭제
-      console.log('더미 데이터');
-      setProductList(dummyData);
-    };
-    getProducts();
-  }, []);// eslint-disable-line react-hooks/exhaustive-deps
+  // ✅ Header에 실제 로그인 상태 반영
+  const isLoggedIn = localStorage.getItem('auth') === '1';
 
-  
   return (
     <>
-      {/* ✅ Header 중앙 정렬 */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
-        <Header isLoggedIn={true} />
+        <Header
+          isLoggedIn={isLoggedIn}
+          onLogout={() => {
+            localStorage.removeItem('auth');
+            navigate('/', { replace: true });
+          }}
+        />
       </div>
 
       <div className={styles.pageWrapper}>
         <main className={styles.mainContent}>
           {/* 왼쪽 버튼들 */}
           <div className={styles.leftButtons}>
-            <button className={styles.topButton} onClick={handleWriteClick}>
-              + 글쓰기
-            </button>
-            <button className={`${styles.topButton} ${styles.active}`}>
-              채팅
-            </button>
+            <button className={styles.topButton} onClick={handleWriteClick}>+ 글쓰기</button>
+            <button className={`${styles.topButton} ${styles.active}`}>채팅</button>
             <div className={styles.searchContainer}>
-              <input
-                className={styles.searchInput}
-                type="text"
-                placeholder="Search"
-              />
-              <button className="send-button" onClick={handleSendMessage}>
-                <ArrowUpCircle size={40} />
+              <input className={styles.searchInput} type="text" placeholder="Search" />
+              <button className={styles.sendButton} onClick={handleSendMessage}>
+                <ArrowUpCircle size={32} />
               </button>
             </div>
           </div>
 
           {/* 오른쪽 상품 카드 영역 */}
           <div className={styles.productCardsParent}>
-            {productList && productList.length > 0 ? (
-              productList.map((product, index) => (
-                <div 
-                  className={styles.productCards} 
-                  key={product.id || index}
+            {productList.length > 0 ? (
+              productList.map((product) => (
+                <div
+                  className={styles.productCards}
+                  key={product.id}
                   onClick={() => handleProductClick(product.id)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <Heart size={36} />
+                  <div onClick={(e) => { e.stopPropagation(); toggleLike(product.id); }}>
+                    <Heart size={36} liked={likedProducts.includes(product.id)} />
+                  </div>
+
                   <div className={styles.productDetails}>
                     <div className={styles.image20Parent}>
                       <img
                         className={styles.image20}
                         src={product.images?.[0] || "/images/sample-product.jpg"}
-                        alt={product.title || "상품 이미지"}
-                        onError={(e) => {
-                          e.target.src = "/images/sample-product.jpg";
-                        }}
+                        alt={product.title}
+                        onError={(e) => { e.target.src = "/images/sample-product.jpg"; }}
                       />
                       <div className={styles.parent}>
-                        <h3 className={styles.h3}>
-                          {product.title || '상품명'}
-                        </h3>
-                        <h3 className={styles.h3}>
-                          {product.price ? `${product.price.toLocaleString()}포인트` : '가격'}
-                        </h3>
+                        <h3 className={styles.h3}>{product.title}</h3>
+                        <h3 className={styles.h3}>{product.price.toLocaleString()} 포인트</h3>
                       </div>
                       <div className={styles.frameChild} />
                     </div>
                     <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleChatClick();
-                      }}
-                      size="Medium"
-                      state="Default"
-                      variant="Primary"
+                      onClick={(e) => { e.stopPropagation(); handleChatClick(); }}
+                      size="Medium" state="Default" variant="Primary"
                       label="채팅 보내기"
-                      hasIconStart={false}
-                      hasIconEnd={false}
-                      buttonHeight="40px"
-                      buttonWidth="100%"
-                      buttonBorder="1px solid #2c2c2c"
-                      buttonAlignSelf="center"
-                      buttonMargin="0"
-                      buttonFontSize="16px"
-                      buttonFontWeight="600"
-                      size1="16"
-                      starDisplay="none"
-                      size2="16"
-                      xDisplay="none"
+                      buttonHeight="40px" buttonWidth="100%" buttonBorder="1px solid #2c2c2c"
+                      buttonFontSize="16px" buttonFontWeight="600"
                     />
                   </div>
                 </div>
               ))
             ) : (
-              <div style={{ 
-                gridColumn: '1 / -1', 
-                textAlign: 'center', 
-                padding: '50px',
-                color: '#666'
-              }}>
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px', color: '#666' }}>
                 등록된 상품이 없습니다.
               </div>
             )}
@@ -202,3 +129,6 @@ const Market = () => {
 };
 
 export default Market;
+
+
+

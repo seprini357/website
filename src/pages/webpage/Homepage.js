@@ -10,35 +10,37 @@ import Selectvege from '../../components/webpage/Selectvege';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Homepage = () => {
+const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [serialNumber, setSerialNumber] = useState('');
 
+  // ✅ 수정: 비로그인 상태에서 농작물 마켓(/pagination) 접근 막기
   const handleFeatureClick = (page) => {
+    if (!isLoggedIn && page === '/pagination') {
+      alert('로그인 후 이용할 수 있습니다.');
+      navigate('/login');
+      return;
+    }
     navigate(page);
   };
 
-  // 시리얼 번호 입력 후 API 호출 (미완)
   const handleEnterClick = async () => {
     if (!serialNumber.trim()) {
       alert('시리얼 번호를 입력해주세요.');
       return;
     }
-
-    try { //api 수정
-      const res = await fetch(`http://localhost:3000/api/device/${serialNumber}`);
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/device/${serialNumber}`
+      );
       const data = await res.json();
-
       if (!res.ok) {
         console.log('디바이스 조회 실패');
         return;
       }
-
       if (data.success) {
         console.log('디바이스 정보:', data.device);
-        // 모달 열기 또는 페이지 이동 추가하기(미완)
         setIsModalOpen(true);
       } else {
         alert('디바이스 조회 실패');
@@ -49,31 +51,17 @@ const Homepage = () => {
     }
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
+  const handleModalClose = () => setIsModalOpen(false);
   const handleCropSelection = (selectedCrop) => {
     console.log('선택한 작물', selectedCrop);
-    // 작물 선택 시 API 호출 기능 추가(미완)
-  };
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
   };
 
   return (
     <div className="homepage">
       <div className="container">
-        <Header
-          isLoggedIn={isLoggedIn}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
-        />
+        {/* ← App에서 받은 로그인 상태/핸들러 전달 */}
+        <Header isLoggedIn={isLoggedIn} onLogin={onLogin} onLogout={onLogout} />
+
         <main className="main-grid">
           <section className="left-col">
             <h1 className="main-title">
@@ -102,6 +90,7 @@ const Homepage = () => {
               <button type="submit">들어가기</button>
             </form>
           </section>
+
           <section className="right-col">
             <img
               className="main-image-placeholder"
@@ -110,6 +99,7 @@ const Homepage = () => {
             />
           </section>
         </main>
+
         <section className="features-section">
           <div className="feature-card" onClick={() => handleFeatureClick('/')}>
             <img
@@ -122,6 +112,7 @@ const Homepage = () => {
               농작물 상태와 환경 정보를 한눈에 확인하고 편리하게 관리하세요.
             </div>
           </div>
+
           <div
             className="feature-card"
             onClick={() => handleFeatureClick('/pagination')}
@@ -132,6 +123,7 @@ const Homepage = () => {
               수확한 작물을 손쉽게 거래할 수 있어요.
             </div>
           </div>
+
           <div
             className="feature-card"
             onClick={() => handleFeatureClick('/price')}
@@ -143,6 +135,7 @@ const Homepage = () => {
             </div>
           </div>
         </section>
+
         <section className="grow-section">
           <h2 className="grow-title">Grow Anything, Anytime</h2>
           <p className="grow-desc">
@@ -155,7 +148,7 @@ const Homepage = () => {
           </div>
         </section>
       </div>
-      {/*들어가기 버튼 누를 시 작물 고르기 */}
+
       <Selectvege
         isOpen={isModalOpen}
         onClose={handleModalClose}
@@ -167,4 +160,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-

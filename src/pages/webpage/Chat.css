@@ -1,90 +1,175 @@
+/* === 전역 & 변수 === */
+html, body, #root { height: 100%; }
+* { box-sizing: border-box; }
+
+:root {
+  --headerH: 64px;                   /* 실제 Header 높이 값으로 조정 */
+  --topGap: clamp(12px, 2vh, 24px);  /* 헤더 아래 여백 */
+  --bottomGap: clamp(20px, 6vh, 72px); /* 바닥 여백 */
+  --pagePad: clamp(12px, 1.5vw, 16px);
+  --maxW: 1160px;
+}
+
+/* === 컨테이너: 그리드 + 반응형 === */
 .chat-page {
-  display: flex;
-  gap: 40px;
-  margin-top: 100px;
-  max-width: 1200px;
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(520px, 1.25fr);
+  gap: clamp(16px, 2.2vw, 24px);
+
+  height: calc(100vh - var(--headerH) - var(--topGap) - var(--bottomGap));
+  margin-top: var(--topGap);
+  margin-bottom: var(--bottomGap);
+
+  max-width: min(var(--maxW), 94vw);
   margin-left: auto;
   margin-right: auto;
-  padding: 0 20px;
-  align-items: flex-start;
+  padding: 0 var(--pagePad);
+
+  align-items: stretch;
 }
 
-.product-section {
-  flex: 1;
-  max-width: 480px;
+/* 두 칼럼 공통 */
+.product-section,
+.chat-section {
+  height: 100%;
+  min-height: clamp(420px, 58vh, 620px);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  min-height: 500px;
 }
 
+/* ===== 좌측(상품) ===== */
 .product-image {
   width: 100%;
-  height: 260px;
-  background-color: #eee;
-  border-radius: 6px;
+  aspect-ratio: 16 / 9;      /* 기본 비율 */
+  background: #eee;
+  border-radius: 8px;
+  max-height: clamp(220px, 28vh, 360px); /* 화면 크기에 따라 유연 제한 */
+  overflow: hidden;
+}
+
+.product-image > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* 이미지 비율 유지하면서 꽉 채우기 */
+  border-radius: inherit;
+  display: block;
 }
 
 .product-info {
   text-align: center;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px; /* 🔻 여백 더 줄임 */
-  padding: 4px 0; /* 🔻 위아래 여백 줄임 */
+  padding: 8px 4px;
 }
+.product-info h3 { margin: 6px 0; font-weight: 700; }
 
 .product-description {
   border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 48px 24px; /* 🔼 세로 여백 더 넓게 */
+  border-radius: 8px;
+  background: #fff;
   text-align: center;
-  min-height: 160px; /* 🔼 더 넓게 */
+  padding: clamp(16px, 2.2vh, 24px) clamp(16px, 1.8vw, 20px);
+
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
+.payment-button {
+  margin-top: 12px;
+  width: 100%;
+  padding: clamp(12px, 1.8vh, 14px) clamp(16px, 1.6vw, 20px);
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: bold;
+  color: #fff;
+  background: #28a745;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.payment-button:hover { background: #218838; }
+
+/* ===== 우측(채팅) ===== */
 .chat-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  min-height: 500px;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
 }
 
 .chat-window {
-  flex: 1;
-  background-color: #fff;
-  border-bottom: 1px solid #ccc;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fff;
 }
 
 .chat-input {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background-color: #f9f9f9;
+  gap: 12px;
+  padding: clamp(10px, 1.5vh, 12px) clamp(12px, 1.6vw, 16px);
+  background: #f9f9f9;
+  border-top: 1px solid #eee;
 }
 
 .chat-input input {
-  flex: 1;
-  padding: 14px 16px;
-  font-size: 16px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: clamp(10px, 1.4vh, 12px) clamp(12px, 1.5vw, 14px);
   border: 1px solid #ccc;
-  border-radius: 6px;
-  outline: none;
-}
-
-.chat-input svg {
-  margin-left: 16px;
-  cursor: pointer;
+  border-radius: 8px;
+  background: #fff;
 }
 
 .send-button {
-  background: none;
-  border: none;
-  padding: 0;
-  margin-left: 16px;
+  width: 40px;
+  height: 40px;
+  background: none;    /* 투명 */
+  border: none;        /* 테두리 제거 */
+  padding: 0;          /* 여백 제거 */
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* === 반응형 === */
+@media (max-width: 1280px) {
+  .product-image { aspect-ratio: 4 / 3; } /* 태블릿에서 더 세로형 */
+}
+
+@media (max-width: 1024px) {
+  .chat-page {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .product-section,
+  .chat-section {
+    height: auto;
+    min-height: 0;
+  }
+  .product-image { aspect-ratio: 1 / 1; } /* 모바일에서는 정사각형 */
+}
+
+@media (max-width: 1024px) {
+  /* 채팅 영역 자체가 일정 높이를 확보하도록 */
+  .chat-section {
+    min-height: clamp(420px, 60vh, 760px); /* 화면에 따라 유연하게 */
+    display: flex;          /* 보장 (혹시 누락되어도 안전) */
+    flex-direction: column; /* 보장 */
+    overflow: visible;      /* 입력칸이 잘리지 않게 */
+  }
+
+  /* 채팅 내역이 실제로 보이도록 최소높이 보장 */
+  .chat-window {
+    flex: 1 1 auto;
+    min-height: clamp(240px, 45vh, 560px); /* ← 핵심 */
+    overflow: auto;
+  }
+
+  /* 입력칸은 보통 크기 유지 */
+  .chat-input {
+    flex: 0 0 auto;
+  }
 }

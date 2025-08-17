@@ -192,7 +192,7 @@ const Sellingpost = ({ isLoggedIn = true }) => {
   return (
     <div className="sellingpost">
       <div className="container">
-        <Header />
+        <Header isLoggedIn={true} onLogout={() => { localStorage.removeItem("auth"); window.location.href = "/"; }} />
         <main className="main-grid">
           <section className="title-section">
             <h2 className="form-title">상품 등록</h2>
