@@ -12,8 +12,8 @@ const Heart = ({ className = "", size = 48 }) => {
 Heart.propTypes = {
   className: PropTypes.string,
 
-  /** Variant props */
   size: PropTypes.number,
 };
 
 export default Heart;
+

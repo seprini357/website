@@ -472,7 +472,7 @@ const Mypage = () => {
   return (
     <div className="mypage">
       <div className="container">
-        <Header />       
+        <Header isLoggedIn={true} onLogout={() => { localStorage.removeItem("auth"); window.location.href = "/"; }} />
         <main className="main-grid">
           <section className="user-info-section">
             <h2 className="user-info-title">내 정보</h2>

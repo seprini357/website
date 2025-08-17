@@ -6,7 +6,6 @@
   padding: 40px 0;
 }
 
-/* ✅ 전체 콘텐츠를 좌우로 나누기 */
 .mainContent {
   display: flex;
   flex-direction: row;
@@ -16,7 +15,6 @@
   padding: 30px 20px;
 }
 
-/* ✅ 버튼들을 세로로 정렬하고 상품 옆에 위치시키기 */
 .leftButtons {
   display: flex;
   flex-direction: column;
@@ -45,17 +43,19 @@
   align-items: center;
   border: 2px solid #ccc;
   border-radius: 6px;
-  padding: 4px 8px; /* ✅ 세로 패딩 줄이기 */
+  padding: 4px 8px;
   background-color: white;
+  overflow: hidden;
 }
 
 .searchInput {
   border: none;
   outline: none;
-  font-size: 18px;  /* ✅ 글씨 크기 키움 */
-  padding: 6px 0;   /* ✅ 세로 여백 줄이기 */
-  height: 36px;     /* ✅ 높이 직접 지정 */
+  font-size: 18px;
+  padding: 6px 0;
+  height: 36px;
   flex: 1;
+  min-width: 0;
 }
 
 .searchIcon {
@@ -70,6 +70,21 @@
   padding: 0;
   margin-left: 16px;
   cursor: pointer;
+}
+
+.sendButton {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 12px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
 }
 
 .productCardsParent {
@@ -130,7 +145,6 @@
   border-radius: 8px;
 }
 
-/* ✅ 페이지네이션 스타일 */
 .paginationWrapper {
   width: 100%;
   display: flex;
@@ -138,4 +152,12 @@
   margin-top: 40px;
   margin-bottom: 60px;
   font-size: 18px;
+}
+
+@media (max-width: 560px) {
+  .sendButton {
+    width: 28px;
+    height: 28px;
+    margin-left: 8px;
+  }
 }

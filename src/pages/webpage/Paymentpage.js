@@ -251,7 +251,7 @@ const Paymentpage = () => {
   return (
     <div className="paymentpage">
       <div className="container">
-        <Header />
+        <Header isLoggedIn={true} onLogout={() => { localStorage.removeItem("auth"); window.location.href = "/"; }} />
         <div className="main-grid">
           <section className="title-section">
             <h2 className="form-title">결제하기</h2>

@@ -2,15 +2,17 @@ import { useState } from "react";
 import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 
-export default function LoginPage() {
+export default function LoginPage({ onLogin }) {
   const navigate = useNavigate();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login attempt:", { userId, password });
-    navigate("/");
+
+    // TODO: 실제 로그인 API 연동 후 성공 시 아래 실행
+    onLogin();           // ← App의 isLoggedIn = true
+    navigate("/");       // ← 홈으로 이동
   };
 
   const handleSignUp = () => navigate("/signup");

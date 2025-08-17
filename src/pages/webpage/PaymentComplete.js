@@ -8,7 +8,13 @@ const PaymentComplete = () => {
   return (
     <div className="paymentComplete">
       <div className="container">
-        <Header />
+        <Header
+          isLoggedIn={true}
+          onLogout={() => {
+            localStorage.removeItem('auth');
+            window.location.href = '/';
+          }}
+        />
         <main className="main-grid">
           <div className="payment-complete">
             <div className="success-icon">✓</div>

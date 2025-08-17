@@ -7,38 +7,68 @@ import smartfarm from '../../icons/smart farm image.svg';
 import groceries from '../../icons/groceries 2.png';
 import Footer from '../../components/webpage/Footer';
 import Selectvege from '../../components/webpage/Selectvege';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const Homepage = () => {
+const Homepage = ({ isLoggedIn, onLogin, onLogout }) => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
+
+  const [lsLoggedIn, setLsLoggedIn] = useState(() => {
+    try {
+      return localStorage.getItem('isLoggedIn') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // ✅ 같은 탭/다른 탭/포커스/라우트 변경 시 동기화
+  useEffect(() => {
+    const sync = () => setLsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+    window.addEventListener('authchange', sync);  // 같은 탭
+    window.addEventListener('storage', sync);     // 다른 탭
+    window.addEventListener('focus', sync);
+    window.addEventListener('pageshow', sync);
+    return () => {
+      window.removeEventListener('authchange', sync);
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('focus', sync);
+      window.removeEventListener('pageshow', sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    setLsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, [location.pathname]);
+
+  const effectiveIsLoggedIn = typeof isLoggedIn === 'boolean' ? isLoggedIn : lsLoggedIn;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [serialNumber, setSerialNumber] = useState('');
 
   const handleFeatureClick = (page) => {
+    if (!effectiveIsLoggedIn && (page === '/pagination' || page === '/market')) {
+      alert('로그인 후 이용할 수 있습니다.');
+      navigate('/login');
+      return;
+    }
     navigate(page);
   };
 
-  // 시리얼 번호 입력 후 API 호출 (미완)
   const handleEnterClick = async () => {
     if (!serialNumber.trim()) {
       alert('시리얼 번호를 입력해주세요.');
       return;
     }
-
-    try { //api 수정
+    try {
       const res = await fetch(`http://localhost:3000/api/device/${serialNumber}`);
       const data = await res.json();
-
       if (!res.ok) {
         console.log('디바이스 조회 실패');
         return;
       }
-
       if (data.success) {
         console.log('디바이스 정보:', data.device);
-        // 모달 열기 또는 페이지 이동 추가하기(미완)
         setIsModalOpen(true);
       } else {
         alert('디바이스 조회 실패');
@@ -49,31 +79,29 @@ const Homepage = () => {
     }
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
+  const handleModalClose = () => setIsModalOpen(false);
   const handleCropSelection = (selectedCrop) => {
     console.log('선택한 작물', selectedCrop);
-    // 작물 선택 시 API 호출 기능 추가(미완)
   };
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const fallbackLogin = () => navigate('/login');
+  const fallbackLogout = () => {
+    try {
+      localStorage.removeItem('isLoggedIn');
+    } catch {}
+    setLsLoggedIn(false);
+    window.dispatchEvent(new Event('authchange'));
   };
 
   return (
     <div className="homepage">
       <div className="container">
         <Header
-          isLoggedIn={isLoggedIn}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
+          isLoggedIn={effectiveIsLoggedIn}
+          onLogin={onLogin || fallbackLogin}
+          onLogout={onLogout || fallbackLogout}
         />
+
         <main className="main-grid">
           <section className="left-col">
             <h1 className="main-title">
@@ -102,40 +130,30 @@ const Homepage = () => {
               <button type="submit">들어가기</button>
             </form>
           </section>
+
           <section className="right-col">
-            <img
-              className="main-image-placeholder"
-              src={groceries}
-              alt="작물"
-            />
+            <img className="main-image-placeholder" src={groceries} alt="작물" />
           </section>
         </main>
+
         <section className="features-section">
           <div className="feature-card" onClick={() => handleFeatureClick('/')}>
-            <img
-              className="feature-icon"
-              src={smartfarm}
-              alt="smartfarm이미지"
-            />
+            <img className="feature-icon" src={smartfarm} alt="smartfarm이미지" />
             <div className="feature-title">스마트팜 대시보드</div>
             <div className="feature-desc">
               농작물 상태와 환경 정보를 한눈에 확인하고 편리하게 관리하세요.
             </div>
           </div>
-          <div
-            className="feature-card"
-            onClick={() => handleFeatureClick('/pagination')}
-          >
+
+          <div className="feature-card" onClick={() => handleFeatureClick('/pagination')}>
             <img className="feature-icon" src={market} alt="market 이미지" />
             <div className="feature-title">농작물 마켓</div>
             <div className="feature-desc">
               수확한 작물을 손쉽게 거래할 수 있어요.
             </div>
           </div>
-          <div
-            className="feature-card"
-            onClick={() => handleFeatureClick('/price')}
-          >
+
+          <div className="feature-card" onClick={() => handleFeatureClick('/price')}>
             <img className="feature-icon" src={AI} alt="AI 이미지" />
             <div className="feature-title">가격 예측</div>
             <div className="feature-desc">
@@ -143,6 +161,7 @@ const Homepage = () => {
             </div>
           </div>
         </section>
+
         <section className="grow-section">
           <h2 className="grow-title">Grow Anything, Anytime</h2>
           <p className="grow-desc">
@@ -155,16 +174,13 @@ const Homepage = () => {
           </div>
         </section>
       </div>
-      {/*들어가기 버튼 누를 시 작물 고르기 */}
-      <Selectvege
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onEnter={handleCropSelection}
-      />
+
+      <Selectvege isOpen={isModalOpen} onClose={handleModalClose} onEnter={handleCropSelection} />
       <Footer />
     </div>
   );
 };
 
 export default Homepage;
+
 
